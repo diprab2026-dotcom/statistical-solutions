@@ -1,0 +1,11 @@
+age,income,satisfaction,group,channel,purchased
+23,32000,6,A,Online,Yes
+27,41000,7,A,Store,Yes
+31,47000,5,B,Online,No
+35,52000,6,B,Store,Yes
+39,59000,4,B,Online,No
+42,65000,8,A,Store,Yes
+46,71000,7,A,Online,Yes
+50,76000,5,B,Store,No
+54,82000,9,A,Online,Yes
+58,89000,6,B,Store,No
