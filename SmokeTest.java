@@ -4,11 +4,12 @@ import com.candyacademia.spsslite.PhaseTwoStatistics;
 import com.candyacademia.spsslite.PhaseThreeStatistics;
 import com.candyacademia.spsslite.PhaseFourStatistics;
 import com.candyacademia.spsslite.PhaseFiveStatistics;
+import com.candyacademia.spsslite.PdfReportExporter;
 import java.util.List;
 import java.util.Arrays;
 
 public class SmokeTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         var d = Statistics.describe(List.of(1.0, 2.0, 3.0, 4.0, 5.0), 5);
         if (d.n() != 5 || Math.abs(d.mean() - 3.0) > 1e-12 || Math.abs(d.sd() - Math.sqrt(2.5)) > 1e-12)
             throw new AssertionError("Descriptive statistics failed");
@@ -78,6 +79,9 @@ public class SmokeTest {
         var diag = PhaseFiveStatistics.regressionDiagnostics(new double[][]{{1},{2},{3},{4},{5},{6}},new double[]{2,4,5,8,10,11});
         if (diag.n()!=6 || diag.cooksDistance().length!=6 || !Double.isFinite(diag.r2()))
             throw new AssertionError("Regression diagnostics failed");
+        byte[] pdf = PdfReportExporter.create("STATISTICAL SOLUTIONS\nTest output χ² = 4.25\n" + "A long report line ".repeat(20));
+        if (pdf.length<500 || !new String(pdf,0,8,java.nio.charset.StandardCharsets.ISO_8859_1).startsWith("%PDF-1.4"))
+            throw new AssertionError("PDF report export failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
