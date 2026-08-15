@@ -4,7 +4,7 @@ public final class OfflineHelp{
  private OfflineHelp(){}
  public static void show(Component parent){JDialog d=new JDialog(SwingUtilities.getWindowAncestor(parent),"Statistical Solutions — Offline Help",Dialog.ModalityType.MODELESS);JEditorPane p=new JEditorPane("text/html",html());p.setEditable(false);p.setBorder(new EmptyBorder(18,24,18,24));d.add(new JScrollPane(p));d.setSize(850,650);d.setLocationRelativeTo(parent);d.setVisible(true);}
  private static String html(){return """
- <html><style>body{font-family:Segoe UI,Arial;color:#17243d;line-height:1.5}h1{color:#163a70}h2{color:#2563b8;border-bottom:1px solid #ccd6e5;padding-bottom:5px}code{background:#eef2f8;padding:3px}</style>
+ <html><style>body{font-family:Segoe UI,Arial;background:#0f172a;color:#f8fafc;line-height:1.5}h1{color:#67e8f9}h2{color:#60a5fa;border-bottom:1px solid #334155;padding-bottom:5px}b{color:#ffffff}code{background:#1e293b;color:#f8fafc;padding:3px}</style>
  <h1>Statistical Solutions — Offline Guide</h1><p>This guide is available without an internet connection.</p>
  <h2>Getting started</h2><ol><li>Create or sign in to a local account.</li><li>Open CSV, XLSX or SPSS SAV data from File.</li><li>Check variable names in the first row and cases below.</li><li>Select a procedure from Analyze, Models, Scale &amp; Multivariate, or Forecasting &amp; Survival.</li><li>Export results as text or PDF.</li></ol>
  <h2>Data preparation</h2><p>Use one row per case and one column per variable. Blank cells are treated as missing. Binary outcomes should use 0 and 1. Survival status uses 1 for event and 0 for censored.</p>
