@@ -8,6 +8,7 @@ import com.candyacademia.spsslite.PdfReportExporter;
 import com.candyacademia.spsslite.UserAccountStore;
 import com.candyacademia.spsslite.PhaseSixStatistics;
 import com.candyacademia.spsslite.DataExchange;
+import com.candyacademia.spsslite.AppTheme;
 import java.util.List;
 import java.util.Arrays;
 
@@ -108,6 +109,9 @@ public class SmokeTest {
         var imported = DataExchange.readXlsx(excelFile);
         if (imported.getRowCount()!=sample.getRowCount() || imported.getColumnCount()!=sample.getColumnCount())
             throw new AssertionError("Excel round-trip failed");
+        javax.swing.JButton readable = AppTheme.button("Readable action",AppTheme.BLUE);
+        if (AppTheme.contrastRatio(readable.getForeground(),readable.getBackground())<4.5 || readable.getPreferredSize().height<44)
+            throw new AssertionError("Button readability requirements failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
