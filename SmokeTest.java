@@ -6,6 +6,8 @@ import com.candyacademia.spsslite.PhaseFourStatistics;
 import com.candyacademia.spsslite.PhaseFiveStatistics;
 import com.candyacademia.spsslite.PdfReportExporter;
 import com.candyacademia.spsslite.UserAccountStore;
+import com.candyacademia.spsslite.PhaseSixStatistics;
+import com.candyacademia.spsslite.DataExchange;
 import java.util.List;
 import java.util.Arrays;
 
@@ -94,6 +96,18 @@ public class SmokeTest {
         accounts.resetPassword("analyst1","research".toCharArray(),"Reset789".toCharArray());
         if (!accounts.authenticate("analyst1","Reset789".toCharArray()))
             throw new AssertionError("Password recovery failed");
+        var friedman = PhaseSixStatistics.friedman(new double[][]{{1,2,3},{2,3,4},{1,4,5},{2,5,6}});
+        if (friedman.conditions()!=3 || !Double.isFinite(friedman.p()) || friedman.kendallsW()<0)
+            throw new AssertionError("Friedman test failed");
+        var mcnemar = PhaseSixStatistics.mcnemar(new int[]{0,0,1,1,0,1},new int[]{1,0,0,1,1,1});
+        if (!Double.isFinite(mcnemar.p()) || mcnemar.discordant01()!=2)
+            throw new AssertionError("McNemar test failed");
+        var excelFile = java.nio.file.Files.createTempDirectory("statistical-solutions-xlsx").resolve("roundtrip.xlsx");
+        var sample = com.candyacademia.spsslite.SampleData.survey();
+        DataExchange.writeXlsx(sample,excelFile);
+        var imported = DataExchange.readXlsx(excelFile);
+        if (imported.getRowCount()!=sample.getRowCount() || imported.getColumnCount()!=sample.getColumnCount())
+            throw new AssertionError("Excel round-trip failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
