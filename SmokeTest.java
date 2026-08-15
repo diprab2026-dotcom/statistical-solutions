@@ -112,6 +112,9 @@ public class SmokeTest {
         javax.swing.JButton readable = AppTheme.button("Readable action",AppTheme.BLUE);
         if (AppTheme.contrastRatio(readable.getForeground(),readable.getBackground())<4.5 || readable.getPreferredSize().height<44)
             throw new AssertionError("Button readability requirements failed");
+        javax.swing.JButton darkButton = AppTheme.secondaryButton("Dark action");
+        if (AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(darkButton.getForeground(),darkButton.getBackground())<4.5)
+            throw new AssertionError("Dark theme contrast requirements failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
