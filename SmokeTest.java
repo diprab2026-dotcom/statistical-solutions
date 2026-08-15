@@ -3,6 +3,7 @@ import com.candyacademia.spsslite.PhaseOneStatistics;
 import com.candyacademia.spsslite.PhaseTwoStatistics;
 import com.candyacademia.spsslite.PhaseThreeStatistics;
 import com.candyacademia.spsslite.PhaseFourStatistics;
+import com.candyacademia.spsslite.PhaseFiveStatistics;
 import java.util.List;
 import java.util.Arrays;
 
@@ -65,6 +66,18 @@ public class SmokeTest {
         var logistic = PhaseFourStatistics.logistic(new double[][]{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}},new int[]{0,0,0,0,0,1,1,1,1,1},100);
         if (logistic.predictors()!=1 || !Double.isFinite(logistic.modelP()) || logistic.accuracy()<.5)
             throw new AssertionError("Logistic regression failed");
+        var repeated = PhaseFiveStatistics.repeatedMeasures(new double[][]{{10,12,14},{9,11,15},{8,12,13},{11,13,16}});
+        if (repeated.conditions()!=3 || !Double.isFinite(repeated.f()) || !Double.isFinite(repeated.p()))
+            throw new AssertionError("Repeated-measures ANOVA failed");
+        var roc = PhaseFiveStatistics.roc(new double[]{.1,.2,.35,.4,.6,.7,.8,.95},new int[]{0,0,0,1,0,1,1,1});
+        if (roc.auc()<.5 || roc.points().length<3 || !Double.isFinite(roc.optimalThreshold()))
+            throw new AssertionError("ROC failed");
+        var poisson = PhaseFiveStatistics.poisson(new double[][]{{0},{1},{2},{3},{4},{5},{6},{7}},new int[]{1,1,2,2,3,4,5,7},100);
+        if (poisson.predictors()!=1 || !Double.isFinite(poisson.modelP()) || !Double.isFinite(poisson.deviance()))
+            throw new AssertionError("Poisson regression failed");
+        var diag = PhaseFiveStatistics.regressionDiagnostics(new double[][]{{1},{2},{3},{4},{5},{6}},new double[]{2,4,5,8,10,11});
+        if (diag.n()!=6 || diag.cooksDistance().length!=6 || !Double.isFinite(diag.r2()))
+            throw new AssertionError("Regression diagnostics failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
