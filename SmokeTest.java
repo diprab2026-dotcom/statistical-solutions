@@ -5,6 +5,7 @@ import com.candyacademia.spsslite.PhaseThreeStatistics;
 import com.candyacademia.spsslite.PhaseFourStatistics;
 import com.candyacademia.spsslite.PhaseFiveStatistics;
 import com.candyacademia.spsslite.PdfReportExporter;
+import com.candyacademia.spsslite.UserAccountStore;
 import java.util.List;
 import java.util.Arrays;
 
@@ -82,6 +83,17 @@ public class SmokeTest {
         byte[] pdf = PdfReportExporter.create("STATISTICAL SOLUTIONS\nTest output χ² = 4.25\n" + "A long report line ".repeat(20));
         if (pdf.length<500 || !new String(pdf,0,8,java.nio.charset.StandardCharsets.ISO_8859_1).startsWith("%PDF-1.4"))
             throw new AssertionError("PDF report export failed");
+        var accountFile = java.nio.file.Files.createTempDirectory("statistical-solutions-auth").resolve("accounts.properties");
+        var accounts = new UserAccountStore(accountFile);
+        accounts.create("analyst1","Secure123".toCharArray(),"Favourite book?","Research".toCharArray());
+        if (!accounts.hasUsers() || !accounts.authenticate("analyst1","Secure123".toCharArray()))
+            throw new AssertionError("Account creation or authentication failed");
+        accounts.changePassword("analyst1","Secure123".toCharArray(),"Changed456".toCharArray());
+        if (!accounts.authenticate("analyst1","Changed456".toCharArray()))
+            throw new AssertionError("Password change failed");
+        accounts.resetPassword("analyst1","research".toCharArray(),"Reset789".toCharArray());
+        if (!accounts.authenticate("analyst1","Reset789".toCharArray()))
+            throw new AssertionError("Password recovery failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
