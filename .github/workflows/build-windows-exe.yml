@@ -1,0 +1,71 @@
+name: Build Statistical Solutions EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  windows-exe:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Compile application
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out, package-input | Out-Null
+          $sources = Get-ChildItem -Path src -Recurse -Filter *.java | ForEach-Object FullName
+          javac -encoding UTF-8 -Xlint:all -d out $sources
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Create executable JAR
+        shell: pwsh
+        run: |
+          jar --create --file package-input/StatisticalSolutions.jar --main-class com.candyacademia.spsslite.Main -C out .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Package standalone Windows application
+        shell: pwsh
+        run: |
+          jpackage `
+            --type app-image `
+            --name "Statistical Solutions" `
+            --input package-input `
+            --main-jar StatisticalSolutions.jar `
+            --main-class com.candyacademia.spsslite.Main `
+            --dest installer `
+            --vendor "Candy Academia" `
+            --description "Statistical analysis desktop software" `
+            --app-version 1.0.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify EXE
+        shell: pwsh
+        run: |
+          $exe = "installer/Statistical Solutions/Statistical Solutions.exe"
+          if (-not (Test-Path $exe)) { throw "Expected EXE was not generated: $exe" }
+          Get-Item $exe | Format-List FullName, Length, LastWriteTime
+
+      - name: Create downloadable ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "installer/Statistical Solutions" -DestinationPath "Statistical-Solutions-Windows.zip" -Force
+
+      - name: Upload Windows application
+        uses: actions/upload-artifact@v4
+        with:
+          name: Statistical-Solutions-Windows
+          path: Statistical-Solutions-Windows.zip
+          if-no-files-found: error
+          retention-days: 30
