@@ -7,6 +7,7 @@ import com.candyacademia.spsslite.PhaseFiveStatistics;
 import com.candyacademia.spsslite.PdfReportExporter;
 import com.candyacademia.spsslite.UserAccountStore;
 import com.candyacademia.spsslite.PhaseSixStatistics;
+import com.candyacademia.spsslite.PhaseSevenStatistics;
 import com.candyacademia.spsslite.DataExchange;
 import com.candyacademia.spsslite.AppTheme;
 import java.util.List;
@@ -103,6 +104,24 @@ public class SmokeTest {
         var mcnemar = PhaseSixStatistics.mcnemar(new int[]{0,0,1,1,0,1},new int[]{1,0,0,1,1,1});
         if (!Double.isFinite(mcnemar.p()) || mcnemar.discordant01()!=2)
             throw new AssertionError("McNemar test failed");
+        var robust = PhaseSevenStatistics.robust(new double[]{1,2,3,4,5,100});
+        if (robust.n()!=6 || !Double.isFinite(robust.mad()) || robust.iqr()<=0)
+            throw new AssertionError("Robust descriptive statistics failed");
+        var normality = PhaseSevenStatistics.jarqueBera(new double[]{1,2,3,4,5,6,7,8});
+        if (!Double.isFinite(normality.jarqueBera()) || normality.p()<0 || normality.p()>1)
+            throw new AssertionError("Jarque-Bera test failed");
+        var levene = PhaseSevenStatistics.levene(List.of(new double[]{1,2,3,4},new double[]{2,3,4,5},new double[]{8,10,12,14}));
+        if (!Double.isFinite(levene.f()) || levene.p()<0 || levene.p()>1)
+            throw new AssertionError("Levene test failed");
+        var welch = PhaseSevenStatistics.welchAnova(List.of(new double[]{1,2,3,4},new double[]{5,6,7,9},new double[]{10,12,14,18}));
+        if (!Double.isFinite(welch.f()) || welch.p()<0 || welch.p()>1)
+            throw new AssertionError("Welch ANOVA failed");
+        var bootstrap = PhaseSevenStatistics.bootstrapMean(new double[]{2,4,6,8,10},1000,.95,42);
+        if (bootstrap.resamples()!=1000 || bootstrap.lower()>bootstrap.mean() || bootstrap.upper()<bootstrap.mean())
+            throw new AssertionError("Bootstrap confidence interval failed");
+        var adjusted = PhaseSevenStatistics.adjustPValues(new double[]{.001,.02,.04,.5});
+        if (adjusted.benjaminiHochberg().length!=4 || adjusted.bonferroni()[0]>.01)
+            throw new AssertionError("Multiple-testing correction failed");
         var excelFile = java.nio.file.Files.createTempDirectory("statistical-solutions-xlsx").resolve("roundtrip.xlsx");
         var sample = com.candyacademia.spsslite.SampleData.survey();
         DataExchange.writeXlsx(sample,excelFile);
