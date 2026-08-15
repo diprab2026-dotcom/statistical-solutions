@@ -115,6 +115,8 @@ public class SmokeTest {
         javax.swing.JButton darkButton = AppTheme.secondaryButton("Dark action");
         if (AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(darkButton.getForeground(),darkButton.getBackground())<4.5)
             throw new AssertionError("Dark theme contrast requirements failed");
+        if (AppTheme.contrastRatio(AppTheme.BODY,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.HEADING,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.INTERACTIVE,AppTheme.SURFACE)<4.5)
+            throw new AssertionError("Typography palette contrast requirements failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
