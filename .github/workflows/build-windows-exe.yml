@@ -43,11 +43,11 @@ jobs:
           jar --create --file package-input/StatisticalSolutions.jar --main-class com.candyacademia.spsslite.Main -C out .
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Package standalone Windows application
+      - name: Package installable Windows application
         shell: pwsh
         run: |
           jpackage `
-            --type app-image `
+            --type exe `
             --name "Statistical Solutions" `
             --input package-input `
             --main-jar StatisticalSolutions.jar `
@@ -55,25 +55,27 @@ jobs:
             --dest installer `
             --vendor "Candy Academia" `
             --description "Statistical analysis desktop software" `
-            --app-version 1.0.0
+            --app-version 1.0.0 `
+            --win-dir-chooser `
+            --win-menu `
+            --win-menu-group "Statistical Solutions" `
+            --win-shortcut `
+            --win-per-user-install `
+            --win-upgrade-uuid "8d3e59e8-8b1a-4d24-9800-e57468849378"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Verify EXE
+      - name: Verify and name installer
         shell: pwsh
         run: |
-          $exe = "installer/Statistical Solutions/Statistical Solutions.exe"
-          if (-not (Test-Path $exe)) { throw "Expected EXE was not generated: $exe" }
-          Get-Item $exe | Format-List FullName, Length, LastWriteTime
+          $exe = Get-ChildItem -Path installer -Filter *.exe | Select-Object -First 1
+          if (-not $exe) { throw "Expected installer EXE was not generated." }
+          Copy-Item $exe.FullName "Statistical-Solutions-Setup.exe"
+          Get-Item "Statistical-Solutions-Setup.exe" | Format-List FullName, Length, LastWriteTime
 
-      - name: Create downloadable ZIP
-        shell: pwsh
-        run: |
-          Compress-Archive -Path "installer/Statistical Solutions" -DestinationPath "Statistical-Solutions-Windows.zip" -Force
-
-      - name: Upload Windows application
+      - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: Statistical-Solutions-Windows
-          path: Statistical-Solutions-Windows.zip
+          name: Statistical-Solutions-Installer
+          path: Statistical-Solutions-Setup.exe
           if-no-files-found: error
           retention-days: 30
