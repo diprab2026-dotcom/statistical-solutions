@@ -137,7 +137,9 @@ public class SmokeTest {
         if (AppTheme.contrastRatio(AppTheme.BODY,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.HEADING,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.INTERACTIVE,AppTheme.SURFACE)<4.5)
             throw new AssertionError("Typography palette contrast requirements failed");
         if (AppTheme.contrastRatio(AppTheme.MUTED,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.ON_ACCENT,AppTheme.BLUE)<4.5)
-            throw new AssertionError("Complete UI visibility requirements failed");\n        if (AppTheme.BG.getRed()<230 || AppTheme.CARD.getRed()<245 || AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<12.0)\n            throw new AssertionError("Light theme requirements failed");
+            throw new AssertionError("Complete UI visibility requirements failed");
+        if (AppTheme.BG.getRed()<230 || AppTheme.CARD.getRed()<245 || AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<12.0)
+            throw new AssertionError("Light theme requirements failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
