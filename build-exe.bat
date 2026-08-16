@@ -24,7 +24,7 @@ jpackage ^
   --dest installer ^
   --vendor "Candy Academia" ^
   --description "Statistical analysis desktop software" ^
-  --app-version 1.0.0 ^
+  --app-version 1.1.0 ^
   --icon "assets\Statistical-Solutions.ico" ^
   --win-console false
 if errorlevel 1 exit /b 1

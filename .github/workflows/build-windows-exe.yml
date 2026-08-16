@@ -63,7 +63,7 @@ jobs:
             --dest installer `
             --vendor "Candy Academia" `
             --description "Statistical analysis desktop software" `
-            --app-version 1.0.0 `
+            --app-version 1.1.0 `
             --icon "assets/Statistical-Solutions.ico" `
             --win-dir-chooser `
             --win-menu `
@@ -81,10 +81,28 @@ jobs:
           Copy-Item $exe.FullName "Statistical-Solutions-Setup.exe"
           Get-Item "Statistical-Solutions-Setup.exe" | Format-List FullName, Length, LastWriteTime
 
+      - name: Validate installer by silent installation
+        shell: pwsh
+        run: |
+          $setup = (Resolve-Path "Statistical-Solutions-Setup.exe").Path
+          $process = Start-Process -FilePath $setup -ArgumentList "/quiet" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Installer returned exit code $($process.ExitCode)." }
+          $installed = Get-ChildItem -Path $env:LOCALAPPDATA -Filter "Statistical Solutions.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $installed) { throw "Silent installation completed but the application executable was not found." }
+          if ($installed.Length -lt 100000) { throw "Installed application executable is unexpectedly small." }
+          Write-Host "Validated installed executable: $($installed.FullName)"
+          Get-FileHash "Statistical-Solutions-Setup.exe" -Algorithm SHA256 | Format-List
+
+      - name: Create integrity checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash "Statistical-Solutions-Setup.exe" -Algorithm SHA256).Hash.ToLower()
+          "$hash  Statistical-Solutions-Setup.exe" | Set-Content -Encoding ascii "Statistical-Solutions-Setup.exe.sha256"
+
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
           name: Statistical-Solutions-Installer
-          path: Statistical-Solutions-Setup.exe
+          path: |\n            Statistical-Solutions-Setup.exe\n            Statistical-Solutions-Setup.exe.sha256
           if-no-files-found: error
           retention-days: 30
