@@ -133,11 +133,11 @@ public class SmokeTest {
             throw new AssertionError("Button readability requirements failed");
         javax.swing.JButton darkButton = AppTheme.secondaryButton("Dark action");
         if (AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(darkButton.getForeground(),darkButton.getBackground())<4.5)
-            throw new AssertionError("Dark theme contrast requirements failed");
+            throw new AssertionError("Theme contrast requirements failed");
         if (AppTheme.contrastRatio(AppTheme.BODY,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.HEADING,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.INTERACTIVE,AppTheme.SURFACE)<4.5)
             throw new AssertionError("Typography palette contrast requirements failed");
         if (AppTheme.contrastRatio(AppTheme.MUTED,AppTheme.CARD)<7.0 || AppTheme.contrastRatio(AppTheme.ON_ACCENT,AppTheme.BLUE)<4.5)
-            throw new AssertionError("Complete UI visibility requirements failed");
+            throw new AssertionError("Complete UI visibility requirements failed");\n        if (AppTheme.BG.getRed()<230 || AppTheme.CARD.getRed()<245 || AppTheme.contrastRatio(AppTheme.TEXT,AppTheme.CARD)<12.0)\n            throw new AssertionError("Light theme requirements failed");
         System.out.println("All statistical smoke tests passed.");
     }
 }
