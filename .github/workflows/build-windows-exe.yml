@@ -103,6 +103,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Statistical-Solutions-Installer
-          path: |\n            Statistical-Solutions-Setup.exe\n            Statistical-Solutions-Setup.exe.sha256
+          path: |
+            Statistical-Solutions-Setup.exe
+            Statistical-Solutions-Setup.exe.sha256
           if-no-files-found: error
           retention-days: 30
